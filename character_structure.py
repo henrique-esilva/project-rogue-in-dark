@@ -1,5 +1,23 @@
 from functools import partial
 
+def choice_for_animation(idle, front, back, right, pos_now, pos_ago):
+    rel = (pos_now[0] - pos_ago[0], pos_now[1] - pos_ago[1])
+    if rel[0] < 0:
+        if rel[1] < 0:
+            return 45
+        if rel[1] > 0:
+            return 135
+        return 90
+    if rel[0] > 0:
+        if rel[1] < 0:
+            return 315
+        if rel[1] > 0:
+            return 225
+        return 270
+    if rel[1] > 0:
+        return 180
+    return 0
+
 # default class for create an character with self-own actions
 class character:
     # equipment
@@ -19,13 +37,16 @@ class character:
         # and may be affected by your Equipment and HealthSystem
     behavior  = ()
 
-    last_position = ()
-    position =  ()
+    last_position = (0, 0)
+    position =  (0, 0)
     holding = None
     catchcd=0
+    animations=False
+    left = 0
 
     def __init__( self, position:tuple, h_system, stg_system ):
         self.position = position
+        self.last_position = position
         self.health = h_system
         self.storage = stg_system
 
@@ -42,10 +63,9 @@ class character:
         self.position = self.last_position
     
     def move_pos( self, vetor:tuple ):
-        self.last_position = self.position
         self.position = (
-            self.position[0]+vetor[0]/4,
-            self.position[1]+vetor[1]/4
+            self.position[0]+vetor[0]/8,
+            self.position[1]+vetor[1]/8
         )
         return self.position
     
@@ -69,6 +89,14 @@ class character:
         self.actions[0]()
 
     def run(self):
+        if self.animations:
+            result = choice_for_animation(self.animations.idle, self.animations.front, self.animations.back, self.animations.right, self.position, self.last_position)
+            #self.current_animation = result[0]
+            #self.left = result[1]
+            self.degrees = result
+            self.current_animation.run()
+            self.image = self.current_animation.retorna_quadro()
+        #self.last_position = self.position
         self.catchcd-=1
         if self.holding:
             self.holding.run()

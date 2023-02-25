@@ -85,8 +85,8 @@ class Animation():
 					if self.repetindo:
 						self.index = self.inicioDoLoop
 					else:
-						self.turnOff()
-						self.index = 0
+						self.rodando = False
+						self.index -= 1
 
 				except AttributeError:
 					print('WARNING: erro de atribuição de instância em \'Animation.run()\'')

@@ -22,10 +22,10 @@ def request_play(obj:character_structure.character, mapa, keys=None):
     if keys:
         if keys[K_SPACE]:
             obj.catch(mapa.items)
-        a = {K_UP:0, K_DOWN:1, K_LEFT:2, K_RIGHT:3}
+        a = {K_UP:'up', K_DOWN:'down', K_LEFT:'left', K_RIGHT:'right'}
         for i in a.keys():
             if keys[i]:
-                response = obj.actions[0][a[i]]()
+                response = obj.move_direction(a[i])
                 obj.last_position = last_position
     else:
         response = obj.lance()

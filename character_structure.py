@@ -16,7 +16,9 @@ def choice_for_animation(idle, front, back, right, pos_now, pos_ago):
         return 270
     if rel[1] > 0:
         return 180
-    return 0
+    if rel[1] < 0:
+        return 0
+    return None
 
 # default class for create an character with self-own actions
 class character:
@@ -43,6 +45,7 @@ class character:
     catchcd=0
     animations=False
     left = 0
+    degrees = 0
 
     def __init__( self, position:tuple, h_system, stg_system ):
         self.position = position
@@ -51,17 +54,24 @@ class character:
         self.storage = stg_system
 
         self.actions = (
-            (
-            partial(self.move_pos, ( 0,-1)),
-            partial(self.move_pos, ( 0, 1)),
-            partial(self.move_pos, (-1, 0)),
-            partial(self.move_pos, ( 1, 0))
-            ),
+        partial(self.move_pos, ( 0,-1)),
+        partial(self.move_pos, ( 0, 1)),
+        partial(self.move_pos, (-1, 0)),
+        partial(self.move_pos, ( 1, 0))
         )
 
     def back_to_last_position( self ):
         self.position = self.last_position
     
+    def move_direction( self, direction:str ):
+        self.move_pos({
+            'up': (0,-1),
+            'down': (0, 1),
+            'left': (-1, 0),
+            'right': (1, 0),
+        }[direction])
+        return self.position
+
     def move_pos( self, vetor:tuple ):
         self.position = (
             self.position[0]+vetor[0]/8,
@@ -70,7 +80,7 @@ class character:
         return self.position
     
     def catch( self, items ):
-        if self.catchcd>0:
+        if self.catchcd > 0:
             return None
         if not self.holding:
             for item in items:
@@ -93,10 +103,13 @@ class character:
             result = choice_for_animation(self.animations.idle, self.animations.front, self.animations.back, self.animations.right, self.position, self.last_position)
             #self.current_animation = result[0]
             #self.left = result[1]
-            self.degrees = result
+            if type(result) == int:
+                self.degrees = result
+                self.current_animation.rodando = True
+            else: self.current_animation.rodando = False
             self.current_animation.run()
             self.image = self.current_animation.retorna_quadro()
-        #self.last_position = self.position
+        self.last_position = self.position
         self.catchcd-=1
         if self.holding:
             self.holding.run()

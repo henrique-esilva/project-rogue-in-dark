@@ -5,7 +5,7 @@
 
 import pygame, sys, os
 from pygame.locals import *
-import screen, character_structure, item_structure, health_system, storage_system, game_map, inputs, graphics
+import screen, character_structure, item_structure, health_system, storage_system, game_map, inputs, graphics, objetos
 from screen import tamanho_da_tela, tamanho_dos_tiles
 
 dirpath = os.getcwd()
@@ -20,20 +20,31 @@ def request_play(obj:character_structure.character, mapa, keys=None):
     response = None
     last_position = obj.position
     if keys:
-        if keys[K_SPACE]:
+        soma = [0, 0]
+        if keys[K_RSHIFT]:
             obj.catch(mapa.items)
-        a = {K_UP:'up', K_DOWN:'down', K_LEFT:'left', K_RIGHT:'right'}
+        a = {K_UP:(1,-1), K_DOWN:(1,1), K_LEFT:(0,-1), K_RIGHT:(0,1)}
         for i in a.keys():
+            last = obj.position
             if keys[i]:
+                soma[a[i][0]] += a[i][1]
                 response = obj.move_direction(a[i])
-                obj.last_position = last_position
+                for space in mapa.get_full_spaces(obj):
+                    if pygame.Rect(response[0]*tamanho_dos_tiles[0], response[1]*tamanho_dos_tiles[1], tamanho_dos_tiles[0], tamanho_dos_tiles[1]).colliderect(pygame.Rect(space[0]*tamanho_dos_tiles[0], space[1]*tamanho_dos_tiles[1], tamanho_dos_tiles[0], tamanho_dos_tiles[1])):
+                        obj.last_position = last
+                        obj.back_to_last_position()
+                        #soma[a[i][0]] -= a[i][1]
+        obj.direction_for_rotate = soma.copy()
     else:
         response = obj.lance()
-    if response in mapa.get_full_spaces(obj):
-        obj.back_to_last_position()
+    '''if response:
+        for space in mapa.get_full_spaces(obj):
+            if pygame.Rect(response[0]*tamanho_dos_tiles[0], response[1]*tamanho_dos_tiles[1], tamanho_dos_tiles[0], tamanho_dos_tiles[1]).colliderect(pygame.Rect(space[0]*tamanho_dos_tiles[0], space[1]*tamanho_dos_tiles[1], tamanho_dos_tiles[0], tamanho_dos_tiles[1])):
+                obj.back_to_last_position()
+                break'''
 
 def debug():
-    pygame.time.Clock().tick(30)
+    pygame.time.Clock().tick(25)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -43,8 +54,11 @@ def flip_screen( disp ):
     disp.fill((0,0,0))
 
 def main():
-    mapa_do_jogo = game_map.Map()
     display = screen.create(pygame)
+    screen.configura_imagens(pygame)
+
+    mapa_do_jogo = game_map.Map()
+    mapa_do_jogo.caixas.append(objetos.Box((4,2),health_system.HealthSystem, storage_system.StorageSystem))
     mapa_do_jogo.items.append(item_structure.Flashlight(mapa_do_jogo.lightpoints,(5, 0)))
     mapa_do_jogo.items.append(item_structure.Flashlight(mapa_do_jogo.lightpoints,(5, 8)))
     mapa_do_jogo.player = character_structure.character(
@@ -70,8 +84,9 @@ def main():
             i.run()
 
     
-        screen.fill_background(pygame, display)
+        screen.fill_background(pygame, display, mapa_do_jogo.lightpoints)
         screen.blit_player(pygame, display, mapa_do_jogo.player)
+        screen.fill_boxes(pygame, display, mapa_do_jogo.caixas)
         screen.fill_background_fog(pygame, display, mapa_do_jogo.lightpoints)
         flip_screen(display)
 

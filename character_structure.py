@@ -1,7 +1,6 @@
 from functools import partial
 
-def choice_for_animation(idle, front, back, right, pos_now, pos_ago):
-    rel = (pos_now[0] - pos_ago[0], pos_now[1] - pos_ago[1])
+def choice_for_animation(rel):
     if rel[0] < 0:
         if rel[1] < 0:
             return 45
@@ -46,6 +45,7 @@ class character:
     animations=False
     left = 0
     degrees = 0
+    direction_for_rotate = (0,0)
 
     def __init__( self, position:tuple, h_system, stg_system ):
         self.position = position
@@ -64,18 +64,15 @@ class character:
         self.position = self.last_position
     
     def move_direction( self, direction:str ):
-        self.move_pos({
-            'up': (0,-1),
-            'down': (0, 1),
-            'left': (-1, 0),
-            'right': (1, 0),
-        }[direction])
+        a = [0, 0]
+        a[direction[0]]= direction[1]
+        self.move_pos(a)
         return self.position
 
     def move_pos( self, vetor:tuple ):
         self.position = (
-            self.position[0]+vetor[0]/8,
-            self.position[1]+vetor[1]/8
+            self.position[0]+vetor[0]/4,
+            self.position[1]+vetor[1]/4
         )
         return self.position
     
@@ -100,8 +97,8 @@ class character:
 
     def run(self):
         if self.animations:
-            result = choice_for_animation(self.animations.idle, self.animations.front, self.animations.back, self.animations.right, self.position, self.last_position)
-            #self.current_animation = result[0]
+            result = choice_for_animation(self.direction_for_rotate)
+            print(self.direction_for_rotate)
             #self.left = result[1]
             if type(result) == int:
                 self.degrees = result

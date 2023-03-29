@@ -1,4 +1,5 @@
 from functools import partial
+from math import copysign
 
 def choice_for_animation(rel):
     if rel[0] < 0:
@@ -41,8 +42,8 @@ class character:
     last_position = (0, 0)
     position =  (0, 0)
     holding = None
-    catchcd=0
-    animations=False
+    catchcd=0 # cooldown for catch items
+    animation=False
     left = 0
     degrees = 0
     direction_for_rotate = (0,0)
@@ -63,13 +64,15 @@ class character:
     def back_to_last_position( self ):
         self.position = self.last_position
     
-    def move_direction( self, direction:str ):
+    def move_direction( self, direction:tuple ):
+        self.last_position=self.position
         a = [0, 0]
         a[direction[0]]= direction[1]
         self.move_pos(a)
         return self.position
 
     def move_pos( self, vetor:tuple ):
+        self.last_position=self.position
         self.position = (
             self.position[0]+vetor[0]/4,
             self.position[1]+vetor[1]/4
@@ -88,6 +91,7 @@ class character:
                     self.catchcd = 10
                     break
         else:
+            self.holding.arredondar_pos()
             items.append(self.holding)
             self.holding = None
             self.catchcd=10
@@ -96,18 +100,47 @@ class character:
         self.actions[0]()
 
     def run(self):
-        if self.animations:
+        if self.animation:
             result = choice_for_animation(self.direction_for_rotate)
-            print(self.direction_for_rotate)
-            #self.left = result[1]
             if type(result) == int:
                 self.degrees = result
-                self.current_animation.rodando = True
-            else: self.current_animation.rodando = False
-            self.current_animation.run()
-            self.image = self.current_animation.retorna_quadro()
+                self.animation.rodando = True
+            else: self.animation.rodando = False
+            self.animation.run()
+            self.image = self.animation.retorna_quadro()
         self.last_position = self.position
-        self.catchcd-=1
+        if self.catchcd > 0:
+            self.catchcd-=1
         if self.holding:
             self.holding.run()
             self.holding.position = self.position
+
+class Standard_Ghost(character):
+    # this vetor control the character movimentation
+    # first element is 0->horizontal, 1->vertical
+    # second element is the steps counter
+    # third element is how much tiles will move
+    # and last is 1 to down/right and -1 to up/left
+    # this is also a counter
+    counting_steps = [1, 0, 6, 1/2]
+
+    def lance( self ):
+        response=self.move_direction((self.counting_steps[0], self.counting_steps[3]))
+        self.counting_steps[1] += self.counting_steps[3]/4
+        a = [0, 0]
+        a[self.counting_steps[0]] += self.counting_steps[3]
+        self.direction_for_rotate=tuple(a)
+        if self.counting_steps[1] == self.counting_steps[2]:
+            self.counting_steps[3] = copysign(self.counting_steps[3], -1)
+        if self.counting_steps[1] == 0:
+            self.counting_steps[3] = copysign(self.counting_steps[3], 1)
+        return response
+    
+    def back_to_last_position(self):
+        diff=self.last_position[self.counting_steps[0]]-self.position[self.counting_steps[0]]
+        super().back_to_last_position()
+        self.counting_steps[1] += diff
+        if self.counting_steps[1] == self.counting_steps[2]:
+            self.counting_steps[3] = copysign(self.counting_steps[3], -1)
+        if self.counting_steps[1] == 0:
+            self.counting_steps[3] = copysign(self.counting_steps[3], 1)

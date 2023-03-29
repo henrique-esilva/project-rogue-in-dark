@@ -7,13 +7,25 @@ class Box:
         self.position=pos
         self.health=h_system
         self.storage=s_system
-    def put(self, item):
-        if not self.holding:
+        self.interact = self.put
+    def put(self, actor):
+        item = actor.holding
+        if not self.holding and item:
             self.holding = item
-            return None
-        elif not item:
+            if item.id == '#flashlight':
+                item.force += 1
+            actor.holding = None
+            return True
+        elif not item and self.holding:
             cache = self.holding
+            if cache.id == '#flashlight':
+                cache.force -= 1
             self.holding = None
-            return cache
+            actor.holding = cache
+            return True
+        else:
+            return False
     def run(self):
-        pass
+        if self.holding:
+            self.holding.run()
+            self.holding.position = self.position

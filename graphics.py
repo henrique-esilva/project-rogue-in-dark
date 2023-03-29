@@ -21,6 +21,8 @@ def import_animation(pygame, arg, start = 0):     # O "arg"(parametro) deve ser 
         print('    a animação não está recebendo nenhum quadro!')
     return a
 
+ani_base = {}
+
 class AnimationClass():
 
 	def __init__(self):
@@ -44,6 +46,9 @@ class Animation():
 
 	def configura(self, inicioDoLoop):
 		self.inicioDoLoop = inicioDoLoop
+
+	def set_default( self, key:str ):
+		self.content = ani_base[key]
 
 	def set(self, pygame, path = None, start = 0 ):
 

@@ -1,7 +1,7 @@
 
 class StorageSystem:
     # a simple to use and complete class for storage items
-    # this class isn't made for direct management of behaviors
+    # this class wasn't made for direct management of behaviors
     maximum_length = int(-1)
     holding = []
 

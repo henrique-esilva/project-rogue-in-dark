@@ -55,7 +55,6 @@ def evitar_colisao(obj:character_structure.character, mapa_do_jogo:game_map.Map)
     response = obj.position
     for space in mapa_do_jogo.get_full_spaces(obj):
         if pygame.Rect(response[0]*tamanho_dos_tiles[0], response[1]*tamanho_dos_tiles[1], tamanho_dos_tiles[0], tamanho_dos_tiles[1]).colliderect(pygame.Rect(space[0]*tamanho_dos_tiles[0], space[1]*tamanho_dos_tiles[1], tamanho_dos_tiles[0], tamanho_dos_tiles[1])):
-            print("oi")
             obj.back_to_last_position()
             break
 
@@ -64,10 +63,6 @@ def debug():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
-
-def flip_screen( disp ):
-    pygame.display.flip()
-    disp.fill((0,0,0))
 
 def main():
     graphics.ani_base['tic'] = graphics.import_animation(pygame, "imagens//tic", 39)
@@ -120,12 +115,12 @@ def main():
             i.run()
 
     
-        screen.fill_background(pygame, display, mapa_do_jogo.lightpoints)
-        screen.fill_boxes(pygame, display, mapa_do_jogo.caixas)
-        screen.fill_items(pygame, display, mapa_do_jogo.items)
-        screen.fill_enemies(pygame, display, mapa_do_jogo.enemies)
-        screen.blit_player(pygame, display, mapa_do_jogo.player)
+        screen.fill_background(display, mapa_do_jogo.lightpoints)
+        screen.fill_boxes(display, mapa_do_jogo.caixas)
+        screen.fill_items(display, mapa_do_jogo.items)
+        screen.blit_player(pygame, display, mapa_do_jogo.player) # this need a call for pygame
+        screen.fill_enemies(pygame, display, mapa_do_jogo.enemies) # this need a call for pygame too
         screen.fill_background_fog(display, mapa_do_jogo.lightpoints)
-        flip_screen(display)
+        screen.flip_screen(pygame, display)
 
 main()

@@ -15,7 +15,7 @@ def configura_imagens(pygame):
     global imagens_de_itens
     imagem_preta_vazia = pygame.Surface.convert_alpha( pygame.Surface.convert( pygame.Surface( tamanho_dos_tiles ) ) )
     imagem_do_piso = pygame.image.load("imagens/piso.png")
-    imagem_da_caixa= pygame.image.load("imagens/caixa.png")
+    imagem_da_caixa= pygame.image.load("imagens/mesa.png")
     imagens_de_itens['#flashlight'] = pygame.image.load("imagens/lanterna.png")
 
 def create(pyg):
@@ -29,7 +29,7 @@ def create(pyg):
         flags
     )
 
-def fill_background(pyg, display, lanternas):
+def fill_background(display, lanternas):
     display.fill((100, 100, 100))
     img = imagem_do_piso
     for x in range(tamanho_da_tela[0]):
@@ -40,12 +40,35 @@ def fill_background(pyg, display, lanternas):
             #    if min(dists) < 6:
             display.blit(img, (x * tamanho_dos_tiles[0], y * tamanho_dos_tiles[1]))
 
+def fill_boxes(display, caixas):
+    a = []
+    for i in caixas:
+        a.append(i.position)
+    for x in range(tamanho_da_tela[0]):
+        for y in range(tamanho_da_tela[1]):
+            if (x, y) in a:
+                display.blit(imagem_da_caixa, (x * tamanho_dos_tiles[0], y * tamanho_dos_tiles[1]))
+
+def fill_items(display, items):
+    global imagens_de_itens
+    a = []
+    for i in items:
+        a.append(i.position)
+    for x in range(tamanho_da_tela[0]):
+        for y in range(tamanho_da_tela[1]):
+            if (x, y) in a:
+                display.blit(imagens_de_itens[i.id], (x * tamanho_dos_tiles[0], y * tamanho_dos_tiles[1]))
+
 def blit_player(pyg, display, player):
     if player.animation:
         img = pyg.transform.rotate(player.image, player.degrees)
         rect = img.get_rect()
         rect.center = (player.position[0]*tamanho_dos_tiles[0] + tamanho_dos_tiles[0]/2, player.position[1]*tamanho_dos_tiles[1]+tamanho_dos_tiles[1]/2)
         display.blit( img, rect)
+
+def fill_enemies(pyg, display, enemies):
+    for i in  enemies:
+        blit_player(pyg, display, i)
 
 def fill_background_fog(display, lanternas):
 
@@ -73,25 +96,6 @@ def fill_background_fog(display, lanternas):
                 imagem.set_alpha( intensidade )
                 display.blit( imagem, (x * tamanho_dos_tiles[0], y * tamanho_dos_tiles[1]) )
 
-def fill_boxes(pyg, display, caixas):
-    a = []
-    for i in caixas:
-        a.append(i.position)
-    for x in range(tamanho_da_tela[0]):
-        for y in range(tamanho_da_tela[1]):
-            if (x, y) in a:
-                display.blit(imagem_da_caixa, (x * tamanho_dos_tiles[0], y * tamanho_dos_tiles[1]))
-
-def fill_enemies(pyg, display, enemies):
-    for i in  enemies:
-        blit_player(pyg, display, i)
-
-def fill_items(pyg, display, items):
-    global imagens_de_itens
-    a = []
-    for i in items:
-        a.append(i.position)
-    for x in range(tamanho_da_tela[0]):
-        for y in range(tamanho_da_tela[1]):
-            if (x, y) in a:
-                display.blit(imagens_de_itens[i.id], (x * tamanho_dos_tiles[0], y * tamanho_dos_tiles[1]))
+def flip_screen( pyg, disp ):
+    pyg.display.flip()
+    disp.fill((0,0,0))

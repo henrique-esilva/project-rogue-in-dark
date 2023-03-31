@@ -90,7 +90,8 @@ def fill_background_fog(display, lanternas):
                 alt[dist]=pos
             dist = min(alt.keys())
             if pixel!=alt[dist]:
-                intensidade = (16+i.get_flutuaction())*(dist)**2 - 7*dist
+                flut = i.get_flutuaction()
+                intensidade = (16+flut)*(dist)**2 - (7-flut)*dist
                 if intensidade >= 250: intensidade = 250
                 imagem.fill((0,0,0))
                 imagem.set_alpha( intensidade )

@@ -118,7 +118,7 @@ class character:
 class Standard_Ghost(character):
     # this vetor control the character movimentation
     # first element is 0->horizontal, 1->vertical
-    # second element is the steps counter
+    # second element is the steps counter (starts at zero)
     # third element is how much tiles will move
     # and last is 1 to down/right and -1 to up/left
     # this is also a counter

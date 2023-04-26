@@ -72,16 +72,17 @@ def main():
     screen.configura_imagens(pygame)
 
     mapa_do_jogo = game_map.Map()
-    mapa_do_jogo.caixas.append(objetos.Box((4,2),health_system.HealthSystem, storage_system.StorageSystem))
-    mapa_do_jogo.items.append(item_structure.Flashlight(mapa_do_jogo.lightpoints,(5, 0)))
+    mapa_do_jogo.caixas.append(objetos.Box((3,2),health_system.HealthSystem, storage_system.StorageSystem))
+    mapa_do_jogo.items.append(item_structure.Flashlight(mapa_do_jogo.lightpoints,(2, 1)))
     mapa_do_jogo.items.append(item_structure.Flashlight(mapa_do_jogo.lightpoints,(5, 8)))
 
     a = character_structure.Standard_Ghost(
-        (3, 2), health_system.HealthSystem, storage_system.StorageSystem
+        (1, 4), health_system.HealthSystem, storage_system.StorageSystem
     )
     a.animation = graphics.Animation()
     a.animation.configura(0)
     a.animation.set_default('tic')
+    a.counting_steps=[0, 0, 4, 1/2]
     mapa_do_jogo.enemies.append(a)
 
     a = character_structure.Standard_Ghost(
@@ -95,7 +96,7 @@ def main():
     del a
 
     mapa_do_jogo.player = character_structure.character(
-        (0, 0), health_system.HealthSystem, storage_system.StorageSystem
+        (1, 1), health_system.HealthSystem, storage_system.StorageSystem
     )
     mapa_do_jogo.player.animation = graphics.Animation()
     mapa_do_jogo.player.animation.configura(0)
@@ -115,11 +116,13 @@ def main():
             i.run()
 
     
-        screen.fill_background(display, mapa_do_jogo.lightpoints)
+        #screen.fill_background(display, mapa_do_jogo.lightpoints)
+        screen.fill_floors(display, mapa_do_jogo.floors)
         screen.fill_boxes(display, mapa_do_jogo.caixas)
         screen.fill_items(display, mapa_do_jogo.items)
         screen.blit_player(pygame, display, mapa_do_jogo.player) # this need a call for pygame
         screen.fill_enemies(pygame, display, mapa_do_jogo.enemies) # this need a call for pygame too
+        screen.fill_walls(display, mapa_do_jogo.paredes)
         screen.fill_background_fog(display, mapa_do_jogo.lightpoints)
         screen.flip_screen(pygame, display)
 

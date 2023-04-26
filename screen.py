@@ -6,6 +6,7 @@ tamanho_da_tela = (20, 12)
 imagem_preta_vazia = None
 imagem_do_piso = None
 imagem_da_caixa = None
+imagens_das_paredes = None
 imagens_de_itens = {}
 
 def configura_imagens(pygame):
@@ -13,9 +14,19 @@ def configura_imagens(pygame):
     global imagem_do_piso
     global imagem_da_caixa
     global imagens_de_itens
+    global imagens_das_paredes
     imagem_preta_vazia = pygame.Surface.convert_alpha( pygame.Surface.convert( pygame.Surface( tamanho_dos_tiles ) ) )
     imagem_do_piso = pygame.image.load("imagens/piso.png")
     imagem_da_caixa= pygame.image.load("imagens/mesa.png")
+    imagens_das_paredes = [
+        pygame.image.load("imagens/paredes/0.png"),
+        pygame.image.load("imagens/paredes/1.png"),
+        pygame.image.load("imagens/paredes/2.png"),
+        pygame.image.load("imagens/paredes/3.png"),
+        pygame.image.load("imagens/paredes/4.png"),
+        pygame.image.load("imagens/paredes/5.png"),
+        pygame.image.load("imagens/paredes/6.png"),
+        pygame.image.load("imagens/paredes/7.png")]
     imagens_de_itens['#flashlight'] = pygame.image.load("imagens/lanterna.png")
 
 def create(pyg):
@@ -29,16 +40,31 @@ def create(pyg):
         flags
     )
 
+def render(display, image, vetor:iter):
+    for i in vetor:
+        display.blit(image, (i[0] * tamanho_dos_tiles[0], i[1] * tamanho_dos_tiles[1]))
+
 def fill_background(display, lanternas):
-    display.fill((100, 100, 100))
+    #display.fill((100, 100, 100))
     img = imagem_do_piso
     for x in range(tamanho_da_tela[0]):
         for y in range(tamanho_da_tela[1]):
-            #for i in lanternas:
-            #    dists = []
-            #    dists.append( ((i.position[0] - x) ** 2 + (i.position[1] - y) ** 2) ** (1/2) )
-            #    if min(dists) < 6:
             display.blit(img, (x * tamanho_dos_tiles[0], y * tamanho_dos_tiles[1]))
+
+def fill_floors(display, floors):
+    for i in floors:
+        initial = list(i[0])
+        while initial[0] <= i[1][0]:
+            while initial[1] <= i[1][1]:
+                display.blit(imagem_do_piso, (initial[0] * tamanho_dos_tiles[0], initial[1] * tamanho_dos_tiles[1]))
+                initial[1]+=1
+            initial[0]+=1
+            initial[1]=i[0][1]
+
+def fill_walls(display, paredes):
+    for  n in range(8):
+        for i in paredes[n]:
+            render(display, imagens_das_paredes[n], paredes[n])
 
 def fill_boxes(display, caixas):
     a = []

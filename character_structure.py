@@ -1,3 +1,4 @@
+from basestats import __baseStats__
 from functools import partial
 from math import copysign
 
@@ -21,7 +22,7 @@ def choice_for_animation(rel):
     return None
 
 # default class for create an character with self-own actions
-class character:
+class character(__baseStats__):
     # equipment
     # storage
     # actions, behavior
@@ -43,6 +44,8 @@ class character:
     position =  (0, 0)
     holding = None
     catchcd=0 # cooldown for catch items
+    idle=False
+    walk=False
     animation=False
     left = 0
     degrees = 0
@@ -100,14 +103,20 @@ class character:
         self.actions[0]()
 
     def run(self):
-        if self.animation:
-            result = choice_for_animation(self.direction_for_rotate)
-            if type(result) == int:
-                self.degrees = result
-                self.animation.rodando = True
-            else: self.animation.rodando = False
-            self.animation.run()
-            self.image = self.animation.retorna_quadro()
+        result = choice_for_animation(self.direction_for_rotate)
+        if type(result) == int:
+            self.degrees = result
+            if self.walk:
+                self.animation=self.walk
+            else:
+                self.animation=self.idle
+            #self.animation.rodando = True
+        else:
+            #self.animation.rodando = False
+            self.animation=self.idle
+        self.animation.run()
+        self.image = self.animation.retorna_quadro()
+        
         self.last_position = self.position
         if self.catchcd > 0:
             self.catchcd-=1

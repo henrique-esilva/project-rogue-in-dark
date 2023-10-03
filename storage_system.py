@@ -10,7 +10,7 @@ class StorageSystem:
 
     def already_contains( self, item ):
         if item in self.holding:
-            return self.holding[item]
+            return item
         else:
             return False
 
@@ -31,6 +31,11 @@ class StorageSystem:
             return False
         elif len(self.holding) >= self.maximum_length:
             return True
+    
+    def is_empty( self ):
+        if len(self.holding)==0:
+            return True
+        return False
 
     def get_free_slots( self ):
         if self.maximum_length == -1:

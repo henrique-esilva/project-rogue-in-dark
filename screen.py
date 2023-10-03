@@ -8,6 +8,7 @@ imagem_do_piso = None
 imagem_da_caixa = None
 imagens_das_paredes = None
 imagens_de_itens = {}
+imagens={}
 
 def configura_imagens(pygame):
     global imagem_preta_vazia
@@ -18,15 +19,15 @@ def configura_imagens(pygame):
     imagem_preta_vazia = pygame.Surface.convert_alpha( pygame.Surface.convert( pygame.Surface( tamanho_dos_tiles ) ) )
     imagem_do_piso = pygame.image.load("imagens/piso.png")
     imagem_da_caixa= pygame.image.load("imagens/mesa.png")
-    imagens_das_paredes = [
-        pygame.image.load("imagens/paredes/0.png"),
-        pygame.image.load("imagens/paredes/1.png"),
-        pygame.image.load("imagens/paredes/2.png"),
-        pygame.image.load("imagens/paredes/3.png"),
-        pygame.image.load("imagens/paredes/4.png"),
-        pygame.image.load("imagens/paredes/5.png"),
-        pygame.image.load("imagens/paredes/6.png"),
-        pygame.image.load("imagens/paredes/7.png")]
+    imagens["#door"]=pygame.image.load("imagens/porta.png")
+    imagens["#lamp"]=pygame.image.load("imagens/lamp.png")
+    imagens_das_paredes = []
+    a=pygame.image.load("imagens/paredes-musgo/spritesheet.png")
+    for x in range(12):
+        img=pygame.Surface((32,32))
+        img.blit(a,(0,0),pygame.Rect(32*x,0,32,32))
+        imagens_das_paredes.append(img)
+        
     imagens_de_itens['#flashlight'] = pygame.image.load("imagens/lanterna.png")
 
 def create(pyg):
@@ -44,12 +45,10 @@ def render(display, image, vetor:iter):
     for i in vetor:
         display.blit(image, (i[0] * tamanho_dos_tiles[0], i[1] * tamanho_dos_tiles[1]))
 
-def fill_background(display, lanternas):
-    #display.fill((100, 100, 100))
-    img = imagem_do_piso
+def fill_background(display): # deprecated
     for x in range(tamanho_da_tela[0]):
         for y in range(tamanho_da_tela[1]):
-            display.blit(img, (x * tamanho_dos_tiles[0], y * tamanho_dos_tiles[1]))
+            display.blit(imagem_do_piso, (x * tamanho_dos_tiles[0], y * tamanho_dos_tiles[1]))
 
 def fill_floors(display, floors):
     for i in floors:
@@ -62,18 +61,19 @@ def fill_floors(display, floors):
             initial[1]=i[0][1]
 
 def fill_walls(display, paredes):
-    for  n in range(8):
+    for n in range(len(paredes)):
         for i in paredes[n]:
             render(display, imagens_das_paredes[n], paredes[n])
 
-def fill_boxes(display, caixas):
-    a = []
+def fill_objects(display, caixas):
     for i in caixas:
-        a.append(i.position)
-    for x in range(tamanho_da_tela[0]):
-        for y in range(tamanho_da_tela[1]):
-            if (x, y) in a:
-                display.blit(imagem_da_caixa, (x * tamanho_dos_tiles[0], y * tamanho_dos_tiles[1]))
+        a = []
+        vetor=caixas.get(i)
+        img=imagens[i]
+        for i in vetor:
+            if not i.invisible:
+                a.append(i.position)
+        render(display, img, a)
 
 def fill_items(display, items):
     global imagens_de_itens
@@ -90,7 +90,7 @@ def blit_player(pyg, display, player):
         img = pyg.transform.rotate(player.image, player.degrees)
         rect = img.get_rect()
         rect.center = (player.position[0]*tamanho_dos_tiles[0] + tamanho_dos_tiles[0]/2, player.position[1]*tamanho_dos_tiles[1]+tamanho_dos_tiles[1]/2)
-        display.blit( img, rect)
+        display.blit( img, rect )
 
 def fill_enemies(pyg, display, enemies):
     for i in  enemies:
@@ -118,7 +118,7 @@ def fill_background_fog(display, lanternas):
             if pixel!=alt[dist]:
                 flut = i.get_flutuaction()
                 intensidade = (16+flut)*(dist)**2 - (7-flut)*dist
-                if intensidade >= 250: intensidade = 250
+                if intensidade >= 251: intensidade = 251
                 imagem.fill((0,0,0))
                 imagem.set_alpha( intensidade )
                 display.blit( imagem, (x * tamanho_dos_tiles[0], y * tamanho_dos_tiles[1]) )

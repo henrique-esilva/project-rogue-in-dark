@@ -28,6 +28,8 @@ class AnimationClass():
 	def __init__(self):
 
 		self.idle = Animation()
+		self.walk = Animation()
+
 		self.front = Animation()
 		self.back = Animation()
 		self.right = Animation()

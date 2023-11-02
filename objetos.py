@@ -1,5 +1,16 @@
 from basestats import __baseStats__
 
+class Desk(__baseStats__):
+    position=(0,0)
+    holding=None
+    health=None
+    storage=None
+    def __init__(self, pos=tuple):
+        self.position = pos
+        self.interact = self.put
+    def put(self, *a):
+        pass
+
 class Abajour(__baseStats__):
     position=(0,0)
     holding=None
@@ -35,6 +46,8 @@ class Abajour(__baseStats__):
 
 class Door(__baseStats__):
     def __init__(self, pos:tuple, map_ref, target:tuple, sentido_de_atravessamento:int=0):
+        """sentido_de_atravessamento 0 para portas que serão trespassadas caminhando na horizontal
+1 para portas que serão trespassadas caminhando na vertical"""
         self.sentido_de_atravessamento=sentido_de_atravessamento
         self.position=pos
         self.target=target

@@ -6,6 +6,7 @@ class Map:
     objects={ # objects too
         "#door": [],
         "#lamp": [],
+        "#desk": [],
     }
     caixas=[]
     items=[]
@@ -28,6 +29,7 @@ class Map:
     ]
     obstacles=[] # deprecated?
     floors=[
+        ((6,3),(7,3)),
         ((1,1),(5,4)),
         ((8,1),(9,9))
     ]

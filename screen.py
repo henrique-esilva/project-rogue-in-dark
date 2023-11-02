@@ -21,6 +21,7 @@ def configura_imagens(pygame):
     imagem_da_caixa= pygame.image.load("imagens/mesa.png")
     imagens["#door"]=pygame.image.load("imagens/porta.png")
     imagens["#lamp"]=pygame.image.load("imagens/lamp.png")
+    imagens["#desk"]=pygame.image.load("imagens/mesa.png")
     imagens_das_paredes = []
     a=pygame.image.load("imagens/paredes-musgo/spritesheet.png")
     for x in range(12):
@@ -104,7 +105,7 @@ def fill_background_fog(display, lanternas):
 
     for x in range(tamanho_da_tela[0]):
         for y in range(tamanho_da_tela[1]):
-            # calcular distancia em relacao ao jogador
+            # calcular distancia em relacao a fonte de luz mais proxima
             # preencher com um quadrado preto de canal alfa proporcional a distancia
             # o canal alfa sera proporcional a distribuicao de luz num plano
 
@@ -112,13 +113,14 @@ def fill_background_fog(display, lanternas):
             alt = {}
             for i in lan:
                 pos = i.position
-                dist = ( (pos[0] - pixel[0]) ** 2 + (pos[1] - pixel[1]) ** 2 ) ** (1/2) -2 -i.force
+                dist = ( (pos[0] - pixel[0]) ** 2 + (pos[1] - pixel[1]) ** 2 ) ** (1/2) -i.force -2
                 alt[dist]=pos
             dist = min(alt.keys())
             if pixel!=alt[dist]:
                 flut = i.get_flutuaction()
                 intensidade = (16+flut)*(dist)**2 - (7-flut)*dist
-                if intensidade >= 251: intensidade = 251
+                #if intensidade >= 251: intensidade = 251
+                if intensidade >= 251: intensidade = 255
                 imagem.fill((0,0,0))
                 imagem.set_alpha( intensidade )
                 display.blit( imagem, (x * tamanho_dos_tiles[0], y * tamanho_dos_tiles[1]) )

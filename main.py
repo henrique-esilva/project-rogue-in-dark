@@ -76,10 +76,10 @@ def main():
 
     mapa_do_jogo.objects['#lamp'].append(objetos.Abajour((3,2),health_system.HealthSystem, storage_system.StorageSystem))
     mapa_do_jogo.objects['#door'].append(objetos.Door((6,3),mapa_do_jogo,(0,1),0))
+    mapa_do_jogo.objects['#desk'].append(objetos.Desk((5,2)))
     mapa_do_jogo.items.append(item_structure.Flashlight(mapa_do_jogo.lightpoints,(2, 1)))
-    mapa_do_jogo.items.append(item_structure.Flashlight(mapa_do_jogo.lightpoints,(5, 8)))
-    mapa_do_jogo.items.append(item_structure.Flashlight(mapa_do_jogo.lightpoints,(8, 1)))
-    mapa_do_jogo.items.append(item_structure.Rock(mapa_do_jogo.obstacles, mapa_do_jogo.items,(3, 1)))
+    #mapa_do_jogo.items.append(item_structure.Flashlight(mapa_do_jogo.lightpoints,(5, 8)))
+    #mapa_do_jogo.items.append(item_structure.Flashlight(mapa_do_jogo.lightpoints,(8, 1)))
 
     a = character_structure.Standard_Ghost(
         (1, 4), health_system.HealthSystem, storage_system.StorageSystem
@@ -104,7 +104,7 @@ def main():
     del a
 
     mapa_do_jogo.player = character_structure.character(
-        (8, 1), health_system.HealthSystem, storage_system.StorageSystem
+        (2, 1), health_system.HealthSystem, storage_system.StorageSystem
     )
     mapa_do_jogo.player.idle = graphics.Animation()
     mapa_do_jogo.player.idle.configura(0)
@@ -130,8 +130,8 @@ def main():
 
     
         #screen.fill_background(display, mapa_do_jogo.lightpoints)
-        screen.fill_background( display )
-        #screen.fill_floors( display, mapa_do_jogo.floors )
+        #screen.fill_background( display )
+        screen.fill_floors( display, mapa_do_jogo.floors )
         screen.fill_objects(display, mapa_do_jogo.objects)
         screen.fill_items(display, mapa_do_jogo.items)
         screen.blit_player(pygame, display, mapa_do_jogo.player) # this need a call for pygame

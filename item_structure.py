@@ -17,9 +17,9 @@ class Flashlight(ItemStats):
     def adjust_light(self):
         self.lightpoints[self]=self.position
     def get_flutuaction(self):
-        return sin(self.flutuaction/16*pi)
+        return sin(self.flutuaction/64*pi)
     def cintilar(self):
-        if self.flutuaction<32:
+        if self.flutuaction<64:
             self.flutuaction +=1
         else:
             self.flutuaction =0
@@ -32,7 +32,7 @@ class Flashlight(ItemStats):
         self.tasks.append(self.adjust_light)
         self.tasks.append(self.cintilar)
 
-class Rock(ItemStats):
+'''class Rock(ItemStats):
     id="#flashlight"
     stat=False
     tasks=[]
@@ -51,4 +51,4 @@ class Rock(ItemStats):
         self.obstacles=obstacles
         self.items_ref=items
         self.obstacles.append(self.position)
-        self.tasks.append(self.adjust_obtacle)
+        self.tasks.append(self.adjust_obtacle)'''

@@ -43,7 +43,7 @@ class Map:
 
     def get_full_spaces(self, obj):
         v = ()
-        a=[]
+        a = []
         for i in range(len(self.paredes)):
             a=a+self.paredes[i].copy()
         b=self.get_all_objects()

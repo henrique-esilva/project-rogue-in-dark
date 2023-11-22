@@ -21,8 +21,19 @@ def choice_for_animation(rel):
         return 0
     return None
 
+def chose_animation_rotate(char):
+    result = choice_for_animation(char.direction_for_rotate)
+    if type(result) == int:
+        char.degrees = result
+        if char.walk:
+            char.animation = char.walk
+        else:
+            char.animation = char.idle
+    else:
+        char.animation=char.idle
+
 # default class for create an character with self-own actions
-class character(__baseStats__):
+class Character(__baseStats__):
     # equipment
     # storage
     # actions, behavior
@@ -101,15 +112,16 @@ class character(__baseStats__):
     
     def lance(self):
         self.actions[0]()
+        self.actions = [self.actions[i-1] for i in range(len(self.actions))]
 
     def run(self):
         result = choice_for_animation(self.direction_for_rotate)
         if type(result) == int:
             self.degrees = result
             if self.walk:
-                self.animation=self.walk
+                self.animation = self.walk
             else:
-                self.animation=self.idle
+                self.animation = self.idle
             #self.animation.rodando = True
         else:
             #self.animation.rodando = False
@@ -119,17 +131,21 @@ class character(__baseStats__):
         
         self.last_position = self.position
         if self.catchcd > 0:
-            self.catchcd-=1
+            self.catchcd -= 1
         if self.holding:
             self.holding.run()
             self.holding.position = self.position
 
-class Standard_Ghost(character):
-    # this vetor control the character movimentation
-    # first element is 0->horizontal, 1->vertical
+class Standard_Ghost(Character):
+    # this vetor controls the character movimentation
+    # first element means direction
+    #   0->horizontal
+    #   1->vertical
     # second element is the steps counter (starts at zero)
     # third element is how much tiles will move
-    # and last is 1 to down/right and -1 to up/left
+    # and last is current movement
+    #  -1 -> up/left
+    #   1 -> down/right
     # this is also a counter
     counting_steps = [1, 0, 6, 1/2]
 
@@ -145,6 +161,31 @@ class Standard_Ghost(character):
             self.counting_steps[3] = copysign(self.counting_steps[3], 1)
         return response
     
+    def back_to_last_position(self):
+        diff=self.last_position[self.counting_steps[0]]-self.position[self.counting_steps[0]]
+        super().back_to_last_position()
+        self.counting_steps[1] += diff
+        if self.counting_steps[1] == self.counting_steps[2]:
+            self.counting_steps[3] = copysign(self.counting_steps[3], -1)
+        if self.counting_steps[1] == 0:
+            self.counting_steps[3] = copysign(self.counting_steps[3], 1)
+
+
+class Alien(Character):
+    counting_steps = [1, 0, 6, 1/2]
+
+    def lance( self ):
+        response=self.move_direction((self.counting_steps[0], self.counting_steps[3]))
+        self.counting_steps[1] += self.counting_steps[3]/4
+        #a = [0, 0]
+        #a[self.counting_steps[0]] += self.counting_steps[3]
+        #self.direction_for_rotate=tuple(a)
+        if self.counting_steps[1] == self.counting_steps[2]:
+            self.counting_steps[3] = copysign(self.counting_steps[3], -1)
+        if self.counting_steps[1] == 0:
+            self.counting_steps[3] = copysign(self.counting_steps[3], 1)
+        return response
+
     def back_to_last_position(self):
         diff=self.last_position[self.counting_steps[0]]-self.position[self.counting_steps[0]]
         super().back_to_last_position()

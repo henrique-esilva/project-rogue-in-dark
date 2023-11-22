@@ -17,7 +17,7 @@ if getattr(sys, "frozen", False):
 
 pygame.init()
 
-def request_play(obj:character_structure.character, mapa_do_jogo:game_map.Map, keys=None):
+def request_play(obj:character_structure.Character, mapa_do_jogo:game_map.Map, keys=None):
     response = None
     last_position = obj.position
     if keys:
@@ -48,7 +48,7 @@ def request_play(obj:character_structure.character, mapa_do_jogo:game_map.Map, k
         obj.lance()
         evitar_colisao(obj, mapa_do_jogo=mapa_do_jogo)
 
-def evitar_colisao(obj:character_structure.character, mapa_do_jogo:game_map.Map):
+def evitar_colisao(obj:character_structure.Character, mapa_do_jogo:game_map.Map):
     try:
         if obj.intangible:return 0
     except:pass
@@ -67,7 +67,8 @@ def debug():
 def main():
     graphics.ani_base['tic-walk'] = graphics.import_animation(pygame, "imagens//tic", 39)
     graphics.ani_base['tic-idle'] = graphics.import_animation(pygame, "imagens//tic//idle", 56)
-    graphics.ani_base['walk_ghost'] = graphics.import_animation(pygame, "imagens//fantasma", 0)
+    graphics.ani_base['ghost-walk'] = graphics.import_animation(pygame, "imagens//fantasma", 0)
+    graphics.ani_base['alien-walk'] = graphics.import_animation(pygame, "imagens//alien", 0)
 
     display = screen.create(pygame)
     screen.configura_imagens(pygame)
@@ -98,13 +99,68 @@ def main():
     )
     a.idle = graphics.Animation()
     a.idle.configura(0)
-    a.idle.set_default('walk_ghost')
-    a.counting_steps = [1, 0, 3, 1/2]
+    a.idle.set_default('ghost-walk')
+    a.counting_steps = [1, 0, 3, 1/4]
     mapa_do_jogo.enemies.append(a)
+
+    a = character_structure.Standard_Ghost(
+        (8, 4), health_system.HealthSystem, storage_system.StorageSystem
+    )
+    a.idle = graphics.Animation()
+    a.idle.configura(0)
+    a.idle.set_default('ghost-walk')
+    a.counting_steps = [0, 0, 1, 1/4]
+    mapa_do_jogo.enemies.append(a)
+
+    # a = character_structure.Standard_Ghost(
+    #     (5, 3), health_system.HealthSystem, storage_system.StorageSystem
+    # )
+    # a.idle = graphics.Animation()
+    # a.idle.configura(0)
+    # a.idle.set_default('ghost-walk')
+    # a.counting_steps = [0, 0, 4, 1/2]
+    # mapa_do_jogo.enemies.append(a)
+
+    a = character_structure.Alien(
+        (7, 8), health_system.HealthSystem, storage_system.StorageSystem
+    )
+    a.idle = graphics.Animation()
+    a.idle.configura(0)
+    a.idle.set_default('alien-walk')
+    a.counting_steps = [0, 0, 2, 1/4]
+    mapa_do_jogo.enemies.append(a)
+
+    a = character_structure.Alien(
+        (9, 8), health_system.HealthSystem, storage_system.StorageSystem
+    )
+    a.idle = graphics.Animation()
+    a.idle.configura(0)
+    a.idle.set_default('alien-walk')
+    a.counting_steps = [1, 0, 2, 1/4]
+    mapa_do_jogo.enemies.append(a)
+
+    a = character_structure.Alien(
+        (9, 10), health_system.HealthSystem, storage_system.StorageSystem
+    )
+    a.idle = graphics.Animation()
+    a.idle.configura(0)
+    a.idle.set_default('alien-walk')
+    a.counting_steps = [0, 2, 2, -1/4]
+    mapa_do_jogo.enemies.append(a)
+
+    a = character_structure.Alien(
+        (7, 10), health_system.HealthSystem, storage_system.StorageSystem
+    )
+    a.idle = graphics.Animation()
+    a.idle.configura(0)
+    a.idle.set_default('alien-walk')
+    a.counting_steps = [1, 2, 2, -1/4]
+    mapa_do_jogo.enemies.append(a)
+
     del a
 
-    mapa_do_jogo.player = character_structure.character(
-        (2, 1), health_system.HealthSystem, storage_system.StorageSystem
+    mapa_do_jogo.player = character_structure.Character(
+        (8, 7), health_system.HealthSystem, storage_system.StorageSystem
     )
     mapa_do_jogo.player.idle = graphics.Animation()
     mapa_do_jogo.player.idle.configura(0)
@@ -112,6 +168,8 @@ def main():
     mapa_do_jogo.player.walk = graphics.Animation()
     mapa_do_jogo.player.walk.configura(0)
     mapa_do_jogo.player.walk.set_default('tic-walk')
+
+    mapa_do_jogo.items.append(item_structure.Flashlight(mapa_do_jogo.lightpoints,(8, 9)))
 
     while 1:
         debug()
